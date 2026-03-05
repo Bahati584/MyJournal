@@ -37,10 +37,16 @@ router.get("/", (req, res) => {
         const prevR = prevRes[0].prev_month_r || 0;
         const rChange = currentR - prevR;
 
-        // Win rate (current month)
+        // Win rate (current month) — prevent division by zero
         db.query(`
           SELECT 
-            (SUM(CASE WHEN o.result_r > 0 THEN 1 ELSE 0 END) / COUNT(o.id)) * 100 AS win_rate
+            CASE 
+              WHEN COUNT(o.id) = 0 THEN 0
+              ELSE ROUND(
+                (SUM(CASE WHEN o.result_r > 0 THEN 1 ELSE 0 END) / COUNT(o.id)) * 100,
+                0
+              )
+            END AS win_rate
           FROM trade_ideas i
           LEFT JOIN trade_outcomes o ON i.id = o.idea_id
           WHERE MONTH(i.trade_date) = MONTH(CURRENT_DATE()) 
@@ -48,7 +54,7 @@ router.get("/", (req, res) => {
         `, (err, winRes) => {
           if (err) return res.status(500).json({ error: "Failed to fetch win rate" });
 
-          const winRate = winRes[0].win_rate || 0;
+          const winRate = Number(winRes[0].win_rate ?? 0); // safe conversion to number
 
           // Winning streak (max consecutive positive outcomes)
           db.query(`
@@ -75,11 +81,11 @@ router.get("/", (req, res) => {
               winning_streak: winningStreak,
               monthly_r: currentR,
               win_rate: winRate,
-              // Change values
+              // Change values — now safe
               trades_change: `+${currentTrades} this month`,
-              streak_longest: `Longest: ${winningStreak} days`, // could compute longest ever if needed
+              streak_longest: `Longest: ${winningStreak} day${winningStreak === 1 ? '' : 's'}`,
               r_change: `${rChange >= 0 ? '+' : ''}${rChange.toFixed(1)} vs last month`,
-              win_rate_change: `↑ ${winRate.toFixed(0)}% this month` // simplified; can compute vs prev if needed
+              win_rate_change: `↑ ${winRate}% this month` // no .toFixed needed anymore
             });
           });
         });
