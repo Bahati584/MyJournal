@@ -2,15 +2,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
 const multer = require("multer");
-const path = require("path");
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/"),
-  filename: (req, file, cb) => {
-    const uniqueName = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueName + path.extname(file.originalname));
-  }
-});
+const { storage } = require("../config/cloudinary");
 
 const upload = multer({ storage });
 
@@ -18,9 +10,8 @@ const upload = multer({ storage });
 router.post("/", upload.single("screenshot"), (req, res) => {
   const { idea_id, result_r } = req.body;
 
-  const screenshot_path = req.file
-    ? `/uploads/${req.file.filename}`
-    : null;
+  // multer-storage-cloudinary puts the uploaded file's URL in req.file.path
+  const screenshot_path = req.file ? req.file.path : null;
 
   const sql = `
     INSERT INTO trade_outcomes
@@ -35,7 +26,7 @@ router.post("/", upload.single("screenshot"), (req, res) => {
     }
 
     res.json({
-      message: "Outcome attached successfully"
+      message: "Outcome attached successfully",
     });
   });
 });

@@ -158,14 +158,20 @@ function TradeCard({ trade }) {
   const isLoss = hasOutcome && Number(trade.result_r) < 0;
 
   return (
-    <div className={`bg-gray-800 rounded-xl border transition-all duration-200 overflow-hidden
-      ${isWin ? "border-green-700/60" : isLoss ? "border-red-700/60" : "border-gray-700"}`}>
+    <div
+      className={`bg-gray-800 rounded-xl border transition-all duration-200 overflow-hidden
+      ${isWin ? "border-green-700/60" : isLoss ? "border-red-700/60" : "border-gray-700"}`}
+    >
       {/* Card Header */}
-      <div className="p-5 flex items-center justify-between cursor-pointer"
-        onClick={() => setExpanded(!expanded)}>
+      <div
+        className="p-5 flex items-center justify-between cursor-pointer"
+        onClick={() => setExpanded(!expanded)}
+      >
         <div className="flex items-center gap-4">
-          <div className={`w-2 h-12 rounded-full flex-shrink-0
-            ${isWin ? "bg-green-500" : isLoss ? "bg-red-500" : "bg-gray-600"}`} />
+          <div
+            className={`w-2 h-12 rounded-full flex-shrink-0
+            ${isWin ? "bg-green-500" : isLoss ? "bg-red-500" : "bg-gray-600"}`}
+          />
           <div>
             <div className="flex items-center gap-3">
               <span className="text-lg font-bold text-white">{trade.pair}</span>
@@ -188,16 +194,28 @@ function TradeCard({ trade }) {
         </div>
         <div className="flex items-center gap-4">
           {hasOutcome ? (
-            <span className={`text-2xl font-bold tabular-nums
-              ${isWin ? "text-green-400" : "text-red-400"}`}>
-              {Number(trade.result_r) > 0 ? "+" : ""}{Number(trade.result_r).toFixed(2)}R
+            <span
+              className={`text-2xl font-bold tabular-nums
+              ${isWin ? "text-green-400" : "text-red-400"}`}
+            >
+              {Number(trade.result_r) > 0 ? "+" : ""}
+              {Number(trade.result_r).toFixed(2)}R
             </span>
           ) : (
             <span className="text-sm text-gray-500 italic">No outcome yet</span>
           )}
-          <svg className={`w-5 h-5 text-gray-500 transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
-            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <svg
+            className={`w-5 h-5 text-gray-500 transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </div>
       </div>
@@ -208,11 +226,20 @@ function TradeCard({ trade }) {
           {/* Screenshots */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Before</p>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                Before
+              </p>
               {trade.before_screenshot ? (
-                <a href={`${API}${trade.before_screenshot}`} target="_blank" rel="noreferrer">
-                  <img src={`${API}${trade.before_screenshot}`} alt="Before screenshot"
-                    className="w-full rounded-lg border border-gray-700 object-cover max-h-56 hover:opacity-90 transition-opacity cursor-pointer" />
+                <a
+                  href={trade.before_screenshot}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <img
+                    src={trade.before_screenshot}
+                    alt="Before screenshot"
+                    className="w-full rounded-lg border border-gray-700 object-cover max-h-56 hover:opacity-90 transition-opacity cursor-pointer"
+                  />
                 </a>
               ) : (
                 <div className="w-full h-36 rounded-lg border border-dashed border-gray-700 flex items-center justify-center text-gray-600 text-sm">
@@ -221,11 +248,20 @@ function TradeCard({ trade }) {
               )}
             </div>
             <div>
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">After</p>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                After
+              </p>
               {trade.after_screenshot ? (
-                <a href={`${API}${trade.after_screenshot}`} target="_blank" rel="noreferrer">
-                  <img src={`${API}${trade.after_screenshot}`} alt="After screenshot"
-                    className="w-full rounded-lg border border-gray-700 object-cover max-h-56 hover:opacity-90 transition-opacity cursor-pointer" />
+                <a
+                  href={trade.after_screenshot}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <img
+                    src={trade.after_screenshot}
+                    alt="After screenshot"
+                    className="w-full rounded-lg border border-gray-700 object-cover max-h-56 hover:opacity-90 transition-opacity cursor-pointer"
+                  />
                 </a>
               ) : (
                 <div className="w-full h-36 rounded-lg border border-dashed border-gray-700 flex items-center justify-center text-gray-600 text-sm">
@@ -238,8 +274,12 @@ function TradeCard({ trade }) {
           {/* Notes */}
           {trade.notes && (
             <div>
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Notes</p>
-              <p className="text-sm text-gray-300 bg-gray-900 rounded-lg p-4 leading-relaxed">{trade.notes}</p>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                Notes
+              </p>
+              <p className="text-sm text-gray-300 bg-gray-900 rounded-lg p-4 leading-relaxed">
+                {trade.notes}
+              </p>
             </div>
           )}
 
@@ -248,14 +288,21 @@ function TradeCard({ trade }) {
             {trade.risk_percent && (
               <div className="bg-gray-900 rounded-lg px-4 py-2">
                 <span className="text-gray-500">Risk </span>
-                <span className="text-white font-medium">{trade.risk_percent}%</span>
+                <span className="text-white font-medium">
+                  {trade.risk_percent}%
+                </span>
               </div>
             )}
             {hasOutcome && (
-              <div className={`rounded-lg px-4 py-2 ${isWin ? "bg-green-900/40" : "bg-red-900/40"}`}>
+              <div
+                className={`rounded-lg px-4 py-2 ${isWin ? "bg-green-900/40" : "bg-red-900/40"}`}
+              >
                 <span className="text-gray-400">Result </span>
-                <span className={`font-bold ${isWin ? "text-green-400" : "text-red-400"}`}>
-                  {Number(trade.result_r) > 0 ? "+" : ""}{Number(trade.result_r).toFixed(2)}R
+                <span
+                  className={`font-bold ${isWin ? "text-green-400" : "text-red-400"}`}
+                >
+                  {Number(trade.result_r) > 0 ? "+" : ""}
+                  {Number(trade.result_r).toFixed(2)}R
                 </span>
               </div>
             )}
