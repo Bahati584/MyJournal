@@ -151,11 +151,30 @@ function PerformanceCalendar() {
 }
 
 // ─── Trade Card ───────────────────────────────────────────────────────────────
-function TradeCard({ trade }) {
+function TradeCard({ trade, onDelete }) {
   const [expanded, setExpanded] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const hasOutcome = trade.outcome_id !== null;
   const isWin = hasOutcome && Number(trade.result_r) > 0;
   const isLoss = hasOutcome && Number(trade.result_r) < 0;
+
+  const handleDelete = async (e) => {
+    e.stopPropagation();
+    if (
+      !window.confirm(
+        `Delete ${trade.pair} trade from ${format(new Date(trade.trade_date), "dd MMM yyyy")}? This cannot be undone.`,
+      )
+    )
+      return;
+    setDeleting(true);
+    try {
+      await axios.delete(`${API}/api/trades-view/${trade.id}`);
+      onDelete(trade.id);
+    } catch (err) {
+      alert("Failed to delete trade. Please try again.");
+      setDeleting(false);
+    }
+  };
 
   return (
     <div
@@ -204,6 +223,26 @@ function TradeCard({ trade }) {
           ) : (
             <span className="text-sm text-gray-500 italic">No outcome yet</span>
           )}
+          <button
+            onClick={handleDelete}
+            disabled={deleting}
+            className="p-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-900/30 transition-colors disabled:opacity-50"
+            title="Delete trade"
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              />
+            </svg>
+          </button>
           <svg
             className={`w-5 h-5 text-gray-500 transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
             fill="none"
@@ -352,17 +391,24 @@ function TradesPage() {
     <div>
       <div className="mb-8">
         <h2 className="text-2xl font-bold text-gray-100">Trades</h2>
-        <p className="text-gray-500 mt-1">Every idea and its outcome, side by side.</p>
+        <p className="text-gray-500 mt-1">
+          Every idea and its outcome, side by side.
+        </p>
       </div>
 
       {/* Filter tabs */}
       <div className="flex gap-2 mb-6">
         {tabs.map((tab) => (
-          <button key={tab.key} onClick={() => setFilter(tab.key)}
+          <button
+            key={tab.key}
+            onClick={() => setFilter(tab.key)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
-              ${filter === tab.key
-                ? "bg-green-600 text-white"
-                : "bg-gray-800 text-gray-400 hover:text-white border border-gray-700"}`}>
+              ${
+                filter === tab.key
+                  ? "bg-green-600 text-white"
+                  : "bg-gray-800 text-gray-400 hover:text-white border border-gray-700"
+              }`}
+          >
             {tab.label}
           </button>
         ))}
@@ -378,7 +424,13 @@ function TradesPage() {
       ) : (
         <div className="space-y-3">
           {filtered.map((trade) => (
-            <TradeCard key={`${trade.id}-${trade.outcome_id}`} trade={trade} />
+            <TradeCard
+              key={`${trade.id}-${trade.outcome_id}`}
+              trade={trade}
+              onDelete={(id) =>
+                setTrades((prev) => prev.filter((t) => t.id !== id))
+              }
+            />
           ))}
         </div>
       )}
